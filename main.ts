@@ -1,4 +1,4 @@
-import { commonConfig } from "./common_config.ts";
+import { config } from "./config.ts";
 import { denocg, esbuild, httpFetch } from "./deps.ts";
 
 const esbuildContext = await esbuild.context({
@@ -30,9 +30,7 @@ const esbuildContext = await esbuild.context({
 await esbuildContext.watch();
 
 denocg.launchServer({
-  ...commonConfig,
-  assetsPort: 8514,
-  assetsRoot: "./client",
+  ...config,
 });
 
 export function add(a: number, b: number): number {

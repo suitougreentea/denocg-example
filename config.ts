@@ -1,7 +1,9 @@
 import { denocg } from "./deps.ts";
 
-export const commonConfig: denocg.CommonConfig = {
+export const config: denocg.ServerConfig = {
   socketPort: 8515,
+  assetsPort: 8514,
+  assetsRoot: "./client",
 };
 
 export type TypeDefinition = {

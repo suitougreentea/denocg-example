@@ -1,8 +1,7 @@
-import { TypeDefinition } from "../common_config.ts";
-import { clientConfig } from "./client_config.ts";
+import { type TypeDefinition } from "../config.ts";
 import { confetti, denocg } from "./deps.ts";
 
-const ctx = await denocg.getContext<TypeDefinition>(clientConfig);
+const ctx = await denocg.getContext<TypeDefinition>();
 
 const inputA = document.querySelector<HTMLInputElement>("#replicant-a")!;
 const buttonA = document.querySelector<HTMLButtonElement>(
