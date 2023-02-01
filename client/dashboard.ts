@@ -7,7 +7,7 @@ const inputA = document.querySelector<HTMLInputElement>("#replicant-a")!;
 const buttonA = document.querySelector<HTMLButtonElement>(
   "#update-replicant-a",
 )!;
-const replicantA = await ctx.getReplicant("a", { defaultValue: 123 });
+const replicantA = await ctx.getReplicant("a");
 replicantA.subscribe((newValue, _) => inputA.value = String(newValue));
 buttonA.onclick = (_) => replicantA.setValue(Number(inputA.value));
 
@@ -15,8 +15,8 @@ const inputB = document.querySelector<HTMLInputElement>("#replicant-b")!;
 const buttonB = document.querySelector<HTMLButtonElement>(
   "#update-replicant-b",
 )!;
-const replicantB = await ctx.getReplicant("b", { defaultValue: "hello" });
-replicantB.subscribe((newValue, _) => inputB.value = newValue);
+const replicantB = await ctx.getReplicant("b");
+replicantB.subscribe((newValue, _) => inputB.value = String(newValue));
 buttonB.onclick = (_) => replicantB.setValue(inputB.value);
 
 confetti();

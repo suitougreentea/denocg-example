@@ -29,9 +29,12 @@ const esbuildContext = await esbuild.context({
 });
 await esbuildContext.watch();
 
-denocg.launchServer({
+const server = denocg.launchServer({
   ...config,
 });
+
+const replicantA = server.getReplicant("a");
+setInterval(() => replicantA.setValue(Math.random()), 1000);
 
 export function add(a: number, b: number): number {
   return a + b;
