@@ -1,5 +1,5 @@
 import { config } from "./config.ts";
-import { denocg, esbuild, httpFetch } from "./deps.ts";
+import { denocg, esbuild, httpImports } from "./deps.ts";
 
 const esbuildContext = await esbuild.context({
   entryPoints: ["./client/graphic.ts", "./client/dashboard.ts"],
@@ -11,6 +11,7 @@ const esbuildContext = await esbuild.context({
   outExtension: { ".js": ".bundle.js" },
   metafile: true,
   plugins: [
+    httpImports(),
     {
       name: "append-comments",
       setup: (build) => {
@@ -24,7 +25,6 @@ const esbuildContext = await esbuild.context({
         });
       },
     },
-    httpFetch,
   ],
 });
 await esbuildContext.watch();
