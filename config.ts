@@ -4,6 +4,7 @@ export type TypeDefinition = {
   replicants: {
     a: number;
     b: string;
+    c: { a: number[]; b: { nested: string[] } };
   };
 };
 

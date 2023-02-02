@@ -19,4 +19,10 @@ const replicantB = await ctx.getReplicant("b");
 replicantB.subscribe((newValue, _) => inputB.value = String(newValue));
 buttonB.onclick = (_) => replicantB.setValue(inputB.value);
 
+const replicantC = await ctx.getReplicant("c");
+replicantC.setValue({
+  a: [0, 1, 2, 10],
+  b: { nested: ["hey", "this", "is", "a", "pen"] },
+});
+
 confetti();

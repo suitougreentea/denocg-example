@@ -41,3 +41,4 @@ cli/tests/.test_coverage/
 #
 /client/**/*.bundle.js
 /server.log
+/replicants.json
