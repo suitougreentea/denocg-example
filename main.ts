@@ -36,7 +36,3 @@ setInterval(() => replicantA.setValue(Math.random()), 100);
 
 const replicantC = server.getReplicant("c");
 console.log(replicantC.getValue());
-
-export function add(a: number, b: number): number {
-  return a + b;
-}
