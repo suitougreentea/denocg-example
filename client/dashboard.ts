@@ -25,4 +25,12 @@ replicantC.setValue({
   b: { nested: ["hey", "this", "is", "a", "pen"] },
 });
 
+const inputD = document.querySelector<HTMLInputElement>("#replicant-d")!;
+const buttonD = document.querySelector<HTMLButtonElement>(
+  "#update-replicant-d",
+)!;
+const replicantD = await ctx.getReplicant("d");
+replicantD.subscribe((newValue, _) => inputD.value = String(newValue));
+buttonD.onclick = (_) => replicantD.setValue(inputD.value);
+
 confetti();

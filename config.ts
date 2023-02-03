@@ -5,6 +5,7 @@ export type TypeDefinition = {
     a: number;
     b: string;
     c: { a: number[]; b: { nested: string[] } };
+    d: string;
   };
 };
 
@@ -14,5 +15,6 @@ export const config: denocg.ServerConfig<TypeDefinition> = {
   assetsRoot: "./client",
   replicants: {
     b: { defaultValue: "Hellllll" },
+    d: { defaultValue: "not persistent", persistent: false },
   },
 };
