@@ -1,20 +1,64 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <meta charset="UTF-8">
   </head>
   <body>
-    <div>
-      <input type="number" id="replicant-a"></div>
-      <button id="update-replicant-a">Update</button>
-    </div>
-    <div>
-      <input type="text" id="replicant-b"></div>
-      <button id="update-replicant-b">Update</button>
-    </div>
-    <div>
-      <input type="text" id="replicant-d"></div>
-      <button id="update-replicant-d">Update</button>
-    </div>
+    <header>
+      <h1>Dashboard page -- will provide a UI to control your graphics</h1>
+    </header>
+    <section>
+      <h2>Replicants</h2>
+      <div>
+        <span>example replicant:&nbsp;</span>
+        <input type="text" id="replicant-example" style="width: 250px">
+        <button id="update-replicant-example">Update</button>
+      </div>
+      <div>
+        <span>exampleNonPersistent replicant (reset on server restart):&nbsp;</span>
+        <input type="text" id="replicant-example-non-persistent" style="width: 250px">
+        <button id="update-replicant-example-non-persistent">Update</button>
+      </div>
+      <div>
+        <span>exampleWithComplexType replicant:&nbsp;</span>
+        <button id="update-replicant-example-with-complex-type">Update (randomly generated)</button>
+      </div>
+    </section>
+    <section>
+      <h2>Messages</h2>
+      <div>
+        <span>param a:&nbsp;</span>
+        <input type="number" id="message-example-params-a">
+        <span>param b:&nbsp;</span>
+        <input type="text" id="message-example-params-b">
+        <button id="send-message-example">Send example message</button>
+      </div>
+      <div>
+        <button id="send-message-example-void">Send exampleVoid message</button>
+      </div>
+    </section>
+    <section>
+      <h2>Requests</h2>
+      <div>
+        <h3>withParamsWithReturn</h3>
+        <input type="text" id="request-with-params-with-return-param">
+        <button id="send-request-with-params-with-return">Make uppercase</button>
+      </div>
+      <div>
+        <h3>withoutParamsWithReturn</h3>
+        <button id="send-request-without-params-with-return">Get server current time</button>
+      </div>
+      <div>
+        <h3>withParamsWithoutReturn</h3>
+        <span>Give comma-separated strings:&nbsp;</span>
+        <input type="text" id="request-with-params-without-return-param">
+        <button id="send-request-with-params-without-return">Send</button>
+      </div>
+      <div>
+        <h3>withoutParamsWithoutReturn</h3>
+        <button id="send-request-without-params-without-return">Push and wait for 3 seconds</button>
+      </div>
+    </section>
     <script type="module" src="dashboard.bundle.js"></script>
   </body>
 </html>

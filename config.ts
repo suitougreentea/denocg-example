@@ -4,20 +4,26 @@ type EmptyObject = Record<keyof unknown, never>;
 
 export type TypeDefinition = {
   replicants: {
-    a: number;
-    b: string;
-    c: { a: number[]; b: { nested: string[] } };
-    d: string;
+    example: string;
+    exampleNonPersistent: string;
+    exampleWithComplexType: {
+      array: number[];
+      object: { nestedArray: string[] };
+    };
+    exampleRegularUpdateFromServer: number;
   };
+
+  messages: {
+    example: { params: { a: number; b: string } };
+    exampleVoid: EmptyObject;
+    exampleFromServer: { params: { tick: number } };
+  };
+
   requests: {
     withParamsWithReturn: { params: string; result: string };
     withoutParamsWithReturn: { result: number };
     withParamsWithoutReturn: { params: string[] };
     withoutParamsWithoutReturn: EmptyObject;
-  };
-  messages: {
-    testMessage: { params: { a: number; b: string } };
-    testMessageVoid: EmptyObject;
   };
 };
 
@@ -26,7 +32,12 @@ export const config: denocg.ServerConfig<TypeDefinition> = {
   assetsPort: 8514,
   assetsRoot: "./client",
   replicants: {
-    b: { defaultValue: "Hellllll" },
-    d: { defaultValue: "not persistent", persistent: false },
+    example: {
+      defaultValue: "string replicant",
+    },
+    exampleNonPersistent: {
+      persistent: false,
+      defaultValue: "string non-persistent replicant",
+    },
   },
 };

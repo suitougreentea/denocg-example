@@ -1,10 +1,31 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <meta charset="UTF-8">
   </head>
   <body>
-    <div id="replicant-a"></div>
-    <div id="replicant-b"></div>
+    <header>
+      <h1>Graphic page -- is the broadcast content</h1>
+    </header>
+    <section>
+      <h2>Replicants</h2>
+      <div>
+        <span>example replicant:&nbsp;</span>
+        <span id="replicant-example"></span>
+      </div>
+      <div>
+        <span>exampleRegularUpdateFromServer replicant:&nbsp;</span>
+        <span id="replicant-example-regular-update-from-server"></span>
+      </div>
+      <div>
+        <span>exampleWithComplexType replicant (stringified):&nbsp;</span>
+        <span id="replicant-example-with-complex-type"></span>
+      </div>
+    </section>
+    <section>
+      <h2>Messages</h2>
+      <ul id="messages-log"></ul>
+    </section>
     <script type="module" src="graphic.bundle.js"></script>
   </body>
 </html>

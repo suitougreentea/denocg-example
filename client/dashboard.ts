@@ -1,66 +1,154 @@
 import { type TypeDefinition } from "../config.ts";
-import { confetti, denocg } from "./deps.ts";
+import { denocg } from "./deps.ts";
 
 const client = await denocg.getClient<TypeDefinition>();
 
-const inputA = document.querySelector<HTMLInputElement>("#replicant-a")!;
-const buttonA = document.querySelector<HTMLButtonElement>(
-  "#update-replicant-a",
-)!;
-const replicantA = await client.getReplicant("a");
-replicantA.subscribe((newValue, _) => inputA.value = String(newValue));
-buttonA.onclick = (_) => replicantA.setValue(Number(inputA.value));
+// Replicants
+////////////////////////////////////////////////////////////////////////////////
 
-const inputB = document.querySelector<HTMLInputElement>("#replicant-b")!;
-const buttonB = document.querySelector<HTMLButtonElement>(
-  "#update-replicant-b",
-)!;
-const replicantB = await client.getReplicant("b");
-replicantB.subscribe((newValue, _) => inputB.value = String(newValue));
-buttonB.onclick = (_) => replicantB.setValue(inputB.value);
+// simple input
+const exampleReplicant = await client.getReplicant("example");
+const replicantExampleInput = document.querySelector<HTMLInputElement>(
+  "#replicant-example",
+);
+const replicantExampleButton = document.querySelector<HTMLButtonElement>(
+  "#update-replicant-example",
+);
+if (replicantExampleInput && replicantExampleButton) {
+  exampleReplicant.subscribe((newValue, _) => {
+    if (newValue === undefined) return; // no values set yet
+    replicantExampleInput.value = newValue;
+  });
+  replicantExampleButton.addEventListener("click", (_) => {
+    exampleReplicant.setValue(replicantExampleInput.value);
+  });
+}
 
-const replicantC = await client.getReplicant("c");
-replicantC.setValue({
-  a: [0, 1, 2, 10],
-  b: { nested: ["hey", "this", "is", "a", "pen"] },
+// values of non-persistent replicants will be reset when server is restarted
+const exampleNonPersistentReplicant = await client.getReplicant(
+  "exampleNonPersistent",
+);
+const replicantExampleNonPersistentInput = document.querySelector<
+  HTMLInputElement
+>("#replicant-example-non-persistent");
+const replicantExampleNonPersistentButton = document.querySelector<
+  HTMLButtonElement
+>("#update-replicant-example-non-persistent");
+if (replicantExampleNonPersistentInput && replicantExampleNonPersistentButton) {
+  exampleNonPersistentReplicant.subscribe((newValue, _) => {
+    if (newValue === undefined) return; // no values set yet
+    replicantExampleNonPersistentInput.value = newValue;
+  });
+  replicantExampleNonPersistentButton.addEventListener("click", (_) => {
+    exampleNonPersistentReplicant.setValue(
+      replicantExampleNonPersistentInput.value,
+    );
+  });
+}
+
+// randomly generate the content of a complex object
+const exampleWithComplexTypeReplicant = await client.getReplicant(
+  "exampleWithComplexType",
+);
+const replicantExampleWithComplexType = document.querySelector<
+  HTMLButtonElement
+>("#update-replicant-example-with-complex-type");
+replicantExampleWithComplexType?.addEventListener("click", (_) => {
+  const array: number[] = [];
+  const nestedArray: string[] = [];
+  for (let i = 0; i < 10; i++) {
+    if (Math.random() < 0.5) array.push(Math.floor(Math.random() * 10));
+    if (Math.random() < 0.5) {
+      nestedArray.push(
+        String.fromCharCode(0x41 + Math.floor(Math.random() * 10)),
+      );
+    }
+  }
+  exampleWithComplexTypeReplicant.setValue({ array, object: { nestedArray } });
 });
 
-const inputD = document.querySelector<HTMLInputElement>("#replicant-d")!;
-const buttonD = document.querySelector<HTMLButtonElement>(
-  "#update-replicant-d",
-)!;
-const replicantD = await client.getReplicant("d");
-replicantD.subscribe((newValue, _) => inputD.value = String(newValue));
-buttonD.onclick = (_) => replicantD.setValue(inputD.value);
+// Messages
+////////////////////////////////////////////////////////////////////////////////
 
-console.log(
-  await client.requestToServer("withParamsWithReturn", "let's make uppercase"),
+// messages are broadcast to server and all clients (including self)
+const messageExampleParamsAInput = document.querySelector<HTMLInputElement>(
+  "#message-example-params-a",
 );
-console.log(
-  await client.requestToServer("withParamsWithoutReturn", [
-    "let's",
-    "make",
-    "all",
-    "uppercase",
-  ]),
+const messageExampleParamsBInput = document.querySelector<HTMLInputElement>(
+  "#message-example-params-b",
 );
-console.log(await client.requestToServer("withoutParamsWithReturn"));
-console.log(await client.requestToServer("withoutParamsWithoutReturn"));
+const sendMessageExampleButton = document.querySelector<HTMLButtonElement>(
+  "#send-message-example",
+);
+if (
+  messageExampleParamsAInput && messageExampleParamsBInput &&
+  sendMessageExampleButton
+) {
+  sendMessageExampleButton.addEventListener("click", (_) => {
+    const a = Number(messageExampleParamsAInput.value);
+    const b = messageExampleParamsBInput.value;
+    client.broadcastMessage("example", { a, b });
+  });
+}
 
-client.addMessageListener(
-  "testMessage",
-  (params) => console.log("testMessage received:", params),
+// just an example of untyped message
+const sendMessageExampleVoidButton = document.querySelector<HTMLButtonElement>(
+  "#send-message-example-void",
 );
-client.addMessageListener(
-  "testMessageVoid",
-  () => console.log("testMessageVoid received #1"),
-);
-client.addMessageListener(
-  "testMessageVoid",
-  () => console.log("testMessageVoid received #2"),
-);
+sendMessageExampleVoidButton?.addEventListener("click", (_) => {
+  client.broadcastMessage("exampleVoid");
+});
 
-client.broadcastMessage("testMessage", { a: 1234, b: "Hello!!!" });
-client.broadcastMessage("testMessageVoid");
+// Requests
+////////////////////////////////////////////////////////////////////////////////
 
-confetti();
+// requests are sent to the server and the caller can receive the result
+const requestWithParamsWithReturnParamInput = document.querySelector<
+  HTMLInputElement
+>("#request-with-params-with-return-param");
+const sendRequestWithParamsWithReturn = document.querySelector<
+  HTMLButtonElement
+>("#send-request-with-params-with-return");
+if (requestWithParamsWithReturnParamInput && sendRequestWithParamsWithReturn) {
+  sendRequestWithParamsWithReturn.addEventListener("click", async (_) => {
+    const param = requestWithParamsWithReturnParamInput.value;
+    const result = await client.requestToServer("withParamsWithReturn", param);
+    window.alert(result);
+  });
+}
+
+// no input params
+const sendRequestWithoutParamsWithReturn = document.querySelector<
+  HTMLButtonElement
+>("#send-request-without-params-with-return");
+sendRequestWithoutParamsWithReturn?.addEventListener("click", async (_) => {
+  const result = await client.requestToServer("withoutParamsWithReturn");
+  window.alert(`Server time (as number): ${result}`);
+});
+
+// this request returns nothing
+// but use requests instead of messages if the clients need to know if the procedure successfully run
+const requestWithParamsWithoutReturnParamInput = document.querySelector<
+  HTMLInputElement
+>("#request-with-params-without-return-param");
+const sendRequestWithParamsWithoutReturn = document.querySelector<
+  HTMLButtonElement
+>("#send-request-with-params-without-return");
+if (
+  requestWithParamsWithoutReturnParamInput && sendRequestWithParamsWithoutReturn
+) {
+  sendRequestWithParamsWithoutReturn.addEventListener("click", async (_) => {
+    const param = requestWithParamsWithoutReturnParamInput.value.split(",");
+    await client.requestToServer("withParamsWithoutReturn", param);
+    window.alert("Successfully handled. See the server log!");
+  });
+}
+
+// wait for a heavy task
+const sendRequestWithoutParamsWithoutReturn = document.querySelector<
+  HTMLButtonElement
+>("#send-request-without-params-without-return");
+sendRequestWithoutParamsWithoutReturn?.addEventListener("click", async (_) => {
+  await client.requestToServer("withoutParamsWithoutReturn");
+  window.alert("Heavy task done!");
+});

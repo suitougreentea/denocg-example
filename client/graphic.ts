@@ -1,23 +1,70 @@
 import { type TypeDefinition } from "../config.ts";
-import { confetti, denocg } from "./deps.ts";
+import { denocg } from "./deps.ts";
 
 const client = await denocg.getClient<TypeDefinition>();
 
-const divA = document.querySelector<HTMLDivElement>("#replicant-a")!;
-const replicantA = await client.getReplicant("a");
-replicantA.subscribe((newValue, _) => divA.innerText = String(newValue));
+// Replicants
+////////////////////////////////////////////////////////////////////////////////
 
-const divB = document.querySelector<HTMLDivElement>("#replicant-b")!;
-const replicantB = await client.getReplicant("b");
-replicantB.subscribe((newValue, _) => divB.innerText = String(newValue));
+const exampleReplicant = await client.getReplicant("example");
+exampleReplicant.subscribe((newValue, _) => {
+  if (newValue === undefined) return; // no values set yet
+  const span = document.querySelector<HTMLSpanElement>("#replicant-example");
+  if (span) span.innerText = newValue;
+});
 
+const exampleRegularUpdateFromServerReplicant = await client.getReplicant(
+  "exampleRegularUpdateFromServer",
+);
+exampleRegularUpdateFromServerReplicant.subscribe((newValue, _) => {
+  if (newValue === undefined) return; // no values set yet
+  const span = document.querySelector<HTMLSpanElement>(
+    "#replicant-example-regular-update-from-server",
+  );
+  if (span) span.innerText = String(newValue);
+});
+
+const exampleWithComplexTypeReplicant = await client.getReplicant(
+  "exampleWithComplexType",
+);
+exampleWithComplexTypeReplicant.subscribe((newValue, _) => {
+  if (newValue === undefined) return; // no values set yet
+  const span = document.querySelector<HTMLSpanElement>(
+    "#replicant-example-with-complex-type",
+  );
+  if (span) span.innerText = JSON.stringify(newValue);
+});
+
+// Messages
+////////////////////////////////////////////////////////////////////////////////
+
+const addEntryToMessageLog = (message: string) => {
+  const ul = document.querySelector<HTMLUListElement>("#messages-log");
+  const li = document.createElement("li");
+  li.innerText = message;
+  ul?.appendChild(li);
+};
 client.addMessageListener(
-  "testMessageVoid",
-  () => console.log("testMessageVoid received #1"),
+  "example",
+  (params) =>
+    addEntryToMessageLog(
+      `example message received: a = ${params.a}, b = ${params.b}`,
+    ),
 );
 client.addMessageListener(
-  "testMessageVoid",
-  () => console.log("testMessageVoid received #2"),
+  "exampleVoid",
+  () => addEntryToMessageLog(`exampleVoid message received`),
+);
+client.addMessageListener(
+  "exampleFromServer",
+  (params) =>
+    addEntryToMessageLog(
+      `exampleFromServer message received: tick = ${params.tick}`,
+    ),
 );
 
-confetti();
+// Requests
+////////////////////////////////////////////////////////////////////////////////
+
+// no example here
+// take a look at main.ts and graphic.ts

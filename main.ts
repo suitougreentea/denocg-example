@@ -1,59 +1,66 @@
 import { config } from "./config.ts";
-import { denocg, esbuild, httpImports } from "./deps.ts";
-
-const esbuildContext = await esbuild.context({
-  entryPoints: ["./client/graphic.ts", "./client/dashboard.ts"],
-  platform: "browser",
-  bundle: true,
-  format: "esm",
-  outbase: "./client",
-  outdir: "./client",
-  outExtension: { ".js": ".bundle.js" },
-  metafile: true,
-  plugins: [
-    httpImports(),
-    {
-      name: "append-comments",
-      setup: (build) => {
-        build.onEnd((result) => {
-          Object.keys(result.metafile?.outputs ?? {}).forEach((path) => {
-            const input = Deno.readTextFileSync(path);
-            const output =
-              "// deno-lint-ignore-file\n// deno-fmt-ignore-file\n" + input;
-            Deno.writeTextFileSync(path, output);
-          });
-        });
-      },
-    },
-  ],
-});
-await esbuildContext.watch();
+import { denocg } from "./deps.ts";
 
 const server = await denocg.launchServer(config);
 
-const replicantA = server.getReplicant("a");
-setInterval(() => replicantA.setValue(Math.random()), 100);
+// Replicants
+////////////////////////////////////////////////////////////////////////////////
 
-const replicantC = server.getReplicant("c");
-console.log(replicantC.getValue());
-
-server.addMessageListener(
-  "testMessageVoid",
-  () => console.log("TestMessageVoid received"),
+// replicants can be subscribed from the server
+const exampleReplicant = server.getReplicant("example");
+exampleReplicant.subscribe((value) =>
+  console.log("example replicant updated:", value)
 );
+
+// replicants can be updated from the server
+const exampleRegularUpdateReplicant = server.getReplicant(
+  "exampleRegularUpdateFromServer",
+);
+setInterval(() => exampleRegularUpdateReplicant.setValue(Math.random()), 1000);
+
+// Messages
+////////////////////////////////////////////////////////////////////////////////
+
+// messages can be subscribed from the server
+server.addMessageListener(
+  "exampleVoid",
+  () => console.log("exampleVoid message received"),
+);
+
+// messages can be sent from the server
+setInterval(
+  () =>
+    server.broadcastMessage("exampleFromServer", { tick: performance.now() }),
+  5000,
+);
+
+// Requests
+////////////////////////////////////////////////////////////////////////////////
+
+// registering handlers
+// clients will get an error if they called a request whose handler is not registered
 server.registerRequestHandler(
   "withParamsWithReturn",
-  (params: string) => Promise.resolve(params.toUpperCase()),
+  (params: string) => params.toUpperCase(),
 );
-server.registerRequestHandler("withParamsWithoutReturn", (params: string[]) => {
-  console.log(params.map((e) => e.toUpperCase()));
-  return Promise.resolve();
-});
+
+// returns the server's current time
 server.registerRequestHandler(
   "withoutParamsWithReturn",
-  () => Promise.resolve(123456789),
+  () => Date.now(),
 );
-server.registerRequestHandler("withoutParamsWithoutReturn", () => {
-  console.log("withoutParamsWithoutReturn");
-  return Promise.resolve();
+
+// this request returns nothing
+// but use requests instead of messages if the clients need to know if the procedure successfully run
+server.registerRequestHandler("withParamsWithoutReturn", (params: string[]) => {
+  console.log("withParamsWithoutReturn request received:", params);
+});
+
+// handlers can be async
+server.registerRequestHandler("withoutParamsWithoutReturn", async () => {
+  console.log("withoutParamsWithoutReturn request received");
+  const heavyTask = new Promise<void>((resolve, _) =>
+    setTimeout(() => resolve(), 3000)
+  );
+  await heavyTask;
 });
