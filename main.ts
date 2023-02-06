@@ -36,3 +36,24 @@ setInterval(() => replicantA.setValue(Math.random()), 100);
 
 const replicantC = server.getReplicant("c");
 console.log(replicantC.getValue());
+
+server.addMessageListener(
+  "testMessageVoid",
+  () => console.log("TestMessageVoid received"),
+);
+server.registerRequestHandler(
+  "withParamsWithReturn",
+  (params: string) => Promise.resolve(params.toUpperCase()),
+);
+server.registerRequestHandler("withParamsWithoutReturn", (params: string[]) => {
+  console.log(params.map((e) => e.toUpperCase()));
+  return Promise.resolve();
+});
+server.registerRequestHandler(
+  "withoutParamsWithReturn",
+  () => Promise.resolve(123456789),
+);
+server.registerRequestHandler("withoutParamsWithoutReturn", () => {
+  console.log("withoutParamsWithoutReturn");
+  return Promise.resolve();
+});
