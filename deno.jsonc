@@ -4,6 +4,6 @@
     "dev-inspect": "deno run --inspect --allow-env --allow-net --allow-read --allow-run --allow-write main.ts"
   },
   "compilerOptions": {
-    "lib": ["deno.window", "dom"]
+    "lib": ["dom", "deno.ns", "deno.unstable"]
   }
 }
