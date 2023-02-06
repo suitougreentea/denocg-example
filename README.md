@@ -1,7 +1,8 @@
 # denocg-example
 
 [Experimental / PoC] An example project of
-https://github.com/suitougreentea/denocg
+[DenoCG](https://github.com/suitougreentea/denocg), a
+[NodeCG](https://github.com/nodecg/nodecg) alternative
 
 ## Usage
 
