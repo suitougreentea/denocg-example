@@ -67,4 +67,4 @@ client.addMessageListener(
 ////////////////////////////////////////////////////////////////////////////////
 
 // no example here
-// take a look at main.ts and graphic.ts
+// take a look at main.ts and dashboard.ts
