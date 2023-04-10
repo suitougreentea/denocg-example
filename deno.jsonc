@@ -1,5 +1,7 @@
 {
   "tasks": {
+    "change-deps-local": "deno run --allow-read --allow-write change_deps.ts --local",
+    "change-deps-latest": "deno run --allow-net --allow-read --allow-write change_deps.ts --latest",
     "build": "deno run --allow-env --allow-net --allow-read --allow-run --allow-write build.ts build",
     "build-watch": "deno run --allow-env --allow-net --allow-read --allow-run --allow-write build.ts watch",
     "start": "deno run --allow-net --allow-read --allow-write main.ts",
