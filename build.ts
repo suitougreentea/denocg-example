@@ -13,6 +13,7 @@ const options: esbuild.BuildOptions = {
   outdir: "./client",
   outExtension: { ".js": ".bundle.js" },
   metafile: true,
+  loader: { ".mjs": "js" },
   plugins: [
     httpImports(),
     {
